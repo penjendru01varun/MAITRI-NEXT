@@ -30,7 +30,9 @@ export default function Dashboard() {
     const [messages, setMessages] = useAtom(messagesAtom);
 
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:8000/ws');
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'localhost:8000';
+        const wsProtocol = backendUrl.includes('localhost') ? 'ws://' : 'wss://';
+        const socket = new WebSocket(`${wsProtocol}${backendUrl.replace('http://', '').replace('https://', '')}/ws`);
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);

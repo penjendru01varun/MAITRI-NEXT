@@ -27,7 +27,10 @@ export default function ChatPanel() {
         setInput('');
 
         try {
-            const response = await fetch(`http://localhost:8000/query/${encodeURIComponent(currentInput)}`);
+            const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const cleanBackendUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
+
+            const response = await fetch(`${cleanBackendUrl}/query/${encodeURIComponent(currentInput)}`);
             const data = await response.json();
 
             const aiMsg = {
