@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+langchain
+langchain-openai
+websockets
+python-socketio
+motor
+redis
+neo4j
+scikit-learn
+pandas
+numpy
+google-generativeai
+python-dotenv
