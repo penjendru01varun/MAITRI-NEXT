@@ -9,6 +9,7 @@ from .mood_agent import MoodAgent
 from .social_agent import SocialAgent
 from .alert_agent import AlertAgent
 from .digital_twin import DigitalTwinAgent
+from .scheduler_agent import SchedulerAgent
 
 __all__ = [
     "BaseAgent",
@@ -22,4 +23,5 @@ __all__ = [
     "SocialAgent",
     "AlertAgent",
     "DigitalTwinAgent",
+    "SchedulerAgent",
 ]

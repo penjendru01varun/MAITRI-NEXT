@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import { messagesAtom } from '@/lib/store';
 import { Send, User, Bot, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 export default function ChatPanel() {
     const [messages, setMessages] = useAtom(messagesAtom);
@@ -57,14 +58,16 @@ export default function ChatPanel() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
-                            <div className={`max-w-[85%] p-3 rounded-2xl flex gap-3 ${msg.role === 'user' ? 'bg-primary/20 border border-primary/30' : 'bg-white/5 border border-white/10'
-                                }`}>
+                            <div className={`max-w-[90%] p-3 rounded-2xl flex gap-3 ${msg.role === 'user' ? 'bg-primary/20 border border-primary/30' : 'bg-white/5 border border-white/10'
+                                } shadow-xl`}>
                                 {msg.role === 'ai' && <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/40">
                                     <Bot size={16} className="text-primary" />
                                 </div>}
-                                <div>
-                                    <p className="text-xs font-mono text-white/40 mb-1">{msg.role === 'user' ? 'COMMANDER' : 'MAITRI'}</p>
-                                    <p className="text-sm leading-relaxed">{msg.text}</p>
+                                <div className="overflow-hidden">
+                                    <p className="text-[10px] font-mono text-white/40 mb-1 uppercase tracking-widest">{msg.role === 'user' ? 'COMMANDER' : 'MAITRI Intel'}</p>
+                                    <div className="text-sm leading-relaxed prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-black/30">
+                                        <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                    </div>
                                     <p className="text-[10px] text-white/20 mt-1 text-right">{msg.timestamp}</p>
                                 </div>
                                 {msg.role === 'user' && <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0 border border-accent/40">
@@ -76,26 +79,30 @@ export default function ChatPanel() {
                 </AnimatePresence>
             </div>
 
-            <div className="p-4 bg-black/20 border-t border-white/5">
+            <div className="p-4 bg-black/40 border-t border-white/10 backdrop-blur-md">
                 <div className="relative">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="Type your message..."
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50 transition-all pr-12"
+                        placeholder="Type your command..."
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50 transition-all pr-12 font-medium"
                     />
                     <button
                         onClick={handleSend}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary hover:bg-primary/20 rounded-lg transition-all"
                     >
                         <Send size={18} />
                     </button>
                 </div>
-                <div className="flex gap-2 mt-3">
-                    {["Analyze Mood", "Health Summary", "Sync with Earth"].map(tag => (
-                        <button key={tag} className="text-[10px] bg-white/5 hover:bg-white/10 px-2 py-1 rounded border border-white/10 text-white/60 transition-all">
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
+                    {["Analyze Mood", "Health Summary", "System Status", "Workout Plan"].map(tag => (
+                        <button
+                            key={tag}
+                            onClick={() => { setInput(tag); }}
+                            className="text-[9px] bg-white/5 hover:bg-white/15 px-3 py-1.5 rounded-full border border-white/10 text-white/80 transition-all whitespace-nowrap active:scale-95"
+                        >
                             {tag}
                         </button>
                     ))}

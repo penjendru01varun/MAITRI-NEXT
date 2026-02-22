@@ -8,17 +8,15 @@ import { agentStatesAtom, activeAgentAtom } from '@/lib/store';
 const AGENTS = [
     { name: "Orchestrator", color: "#4ecdc4", size: 64, ring: 0, angle: 0, desc: "Command Hub" },
     { name: "Vitals", color: "#ff6b6b", size: 48, ring: 1, angle: 0, desc: "Biometrics" },
-    { name: "Psyche", color: "#aa6dc9", size: 48, ring: 1, angle: 72, desc: "Mental State" },
-    { name: "Exercise", color: "#feca57", size: 48, ring: 1, angle: 144, desc: "Fitness" },
-    { name: "Sleep", color: "#54a0ff", size: 48, ring: 1, angle: 216, desc: "Rest Cycles" },
-    { name: "Nutrition", color: "#5f27cd", size: 48, ring: 1, angle: 288, desc: "Sustenance" },
-    { name: "Mission", color: "#ff9f43", size: 44, ring: 2, angle: 0, desc: "Operations" },
-    { name: "Comms", color: "#ee5253", size: 44, ring: 2, angle: 51, desc: "Earth Link" },
-    { name: "Enviro", color: "#00d2d3", size: 44, ring: 2, angle: 102, desc: "Habitat" },
-    { name: "Entertain", color: "#ff6b6b", size: 44, ring: 2, angle: 153, desc: "Recreation" },
-    { name: "Training", color: "#4ecdc4", size: 44, ring: 2, angle: 204, desc: "Skills" },
-    { name: "Alert", color: "#ff4757", size: 44, ring: 2, angle: 255, desc: "Alerts" },
-    { name: "Knowledge", color: "#7bed9f", size: 44, ring: 2, angle: 306, desc: "AI Corpus" },
+    { name: "Counselor", color: "#aa6dc9", size: 48, ring: 1, angle: 60, desc: "Mental State" },
+    { name: "Exercise", color: "#feca57", size: 48, ring: 1, angle: 120, desc: "Fitness" },
+    { name: "Sleep", color: "#54a0ff", size: 48, ring: 1, angle: 180, desc: "Rest Cycles" },
+    { name: "Nutrition", color: "#5f27cd", size: 48, ring: 1, angle: 240, desc: "Sustenance" },
+    { name: "Scheduler", color: "#00d2d3", size: 48, ring: 1, angle: 300, desc: "Mission Timeline" },
+    { name: "Mood", color: "#ff9f43", size: 44, ring: 2, angle: 0, desc: "Emotional Detection" },
+    { name: "Social", color: "#ee5253", size: 44, ring: 2, angle: 90, desc: "Connectivity" },
+    { name: "Alert", color: "#ff4757", size: 44, ring: 2, angle: 180, desc: "Safety System" },
+    { name: "DigitalTwin", color: "#7bed9f", size: 44, ring: 2, angle: 270, desc: "Predictive Simulation" },
 ];
 
 const RING_RADII = [0, 110, 210];

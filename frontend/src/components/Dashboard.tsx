@@ -176,7 +176,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                                 <div className="text-[10px] text-white/60 max-w-[200px]">
-                                    Managing task convergence across 12 specialized clusters. Optimization level: 98.4%.
+                                    Managing task convergence across 11 specialized agents. Optimization level: 98.4%.
                                 </div>
                             </div>
 
@@ -200,7 +200,7 @@ export default function Dashboard() {
                                 <h3 className="font-orbitron text-sm flex items-center gap-2">
                                     <Menu size={16} className="text-primary" /> AGENT CLUSTERS
                                 </h3>
-                                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded">15 ACTIVE</span>
+                                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded">11 ACTIVE</span>
                             </div>
 
                             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">

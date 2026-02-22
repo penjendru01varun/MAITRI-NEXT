@@ -1,12 +1,21 @@
 import os
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import random
-from typing import List, Dict
+from datetime import datetime
+from typing import List, Dict, Any
 
-app = FastAPI(title="MAITRI Backend")
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+
+from agents import (
+    OrchestratorAgent, VitalsAgent, ExerciseAgent, SleepAgent, 
+    NutritionAgent, CounselorAgent, MoodAgent, SocialAgent, 
+    AlertAgent, DigitalTwinAgent, SchedulerAgent
+)
+from core.websocket_manager import ws_manager
+
+app = FastAPI(title="MAITRI Intelligence System")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,77 +25,121 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Simulated Agent State
-class AgentCluster:
-    def __init__(self, name: str, agents: List[str]):
-        self.name = name
-        self.agents = agents
-        self.status = "Active"
+# Initialize Agents
+orchestrator = OrchestratorAgent()
+vitals_agent = VitalsAgent()
+exercise_agent = ExerciseAgent()
+sleep_agent = SleepAgent()
+nutrition_agent = NutritionAgent()
+counselor_agent = CounselorAgent()
+mood_agent = MoodAgent()
+social_agent = SocialAgent()
+alert_agent = AlertAgent()
+digital_twin = DigitalTwinAgent()
+scheduler_agent = SchedulerAgent()
 
-clusters = {
-    "Physical": AgentCluster("Physical", ["Vitals", "Exercise", "Sleep", "Nutrition"]),
-    "Psychological": AgentCluster("Psychological", ["Counselor", "MoodDetector", "Social"]),
-    "Mission": AgentCluster("Mission", ["Scheduler", "Comms", "Environmental"]),
-    "Intelligence": AgentCluster("Intelligence", ["Orchestrator", "Alert", "Knowledge", "DigitalTwin"])
+# List of all agents for easy iteration
+all_agents = [
+    orchestrator, vitals_agent, counselor_agent, exercise_agent, 
+    sleep_agent, nutrition_agent, mood_agent, social_agent,
+    alert_agent, digital_twin, scheduler_agent
+]
+
+# Map names for frontend compatibility
+AGENT_DISPLAY_NAMES = {
+    "Orchestrator": "Orchestrator",
+    "Vitals": "Vitals",
+    "Counselor": "Counselor",
+    "Exercise": "Exercise",
+    "Sleep": "Sleep",
+    "Nutrition": "Nutrition",
+    "Mood Detector": "Mood",
+    "Social": "Social",
+    "Alert": "Alert",
+    "Digital Twin": "DigitalTwin",
+    "Scheduler": "Scheduler"
 }
 
-agents = []
-for c in clusters.values():
-    agents.extend(c.agents)
-
-agent_states = {name: {"status": "Active", "last_action": "Monitoring..."} for name in agents}
-
-def simulate_reasoning(query: str):
-    """Simulates the orchestrator breaking down a query into tasks."""
-    tasks = [
-        {"agent": "Orchestrator", "action": f"Analyzing query: '{query}'"},
-        {"agent": "Orchestrator", "action": "Decomposing into subtasks..."},
-        {"agent": "Psyche", "action": "Detecting emotional markers..."},
-        {"agent": "Vitals", "action": "Cross-referencing biometric trends..."},
-        {"agent": "Orchestrator", "action": "Synthesizing recommendations."},
-    ]
-    return tasks
+@app.on_event("startup")
+async def startup_event():
+    # Register all agents with the orchestrator
+    for agent in all_agents:
+        if agent != orchestrator:
+            await orchestrator.register_agent(agent)
+    print(f"MAITRI Agentic Mesh Initialized with {len(all_agents)} Agents.")
 
 @app.get("/query/{text}")
 async def process_query(text: str):
-    reasoning = simulate_reasoning(text)
-    return {"reasoning_chain": reasoning, "response": f"MAITRI has processed your request regarding '{text}'."}
+    # Use orchestrator to handle the query
+    result = await orchestrator.process({
+        "action": "handle_complex_query",
+        "query": text
+    })
+    
+    # The new Orchestrator returns 'response' and 'reasoning_chain' directly
+    return {
+        "response": result.get("response", "I've processed your request."),
+        "reasoning_chain": result.get("reasoning_chain", [])
+    }
+
+@app.get("/status")
+async def get_system_status():
+    return await orchestrator.process({"action": "get_system_status"})
 
 @app.get("/")
 async def root():
-    return {"message": "MAITRI Backend is running"}
+    return {"message": "MAITRI Core is operational", "agents_active": len(all_agents)}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
+    client_id = await ws_manager.connect(websocket)
     try:
         while True:
-            # Send simulated vitals and agent updates
-            vitals = {
-                "heart_rate": random.randint(65, 80),
-                "sleep_quality": random.randint(80, 95),
-                "stress_level": random.randint(10, 30),
-                "o2_level": round(random.uniform(20.8, 21.2), 1),
-                "co2_level": round(random.uniform(0.03, 0.05), 2),
-                "temperature": round(random.uniform(21.5, 23.5), 1),
+            # Generate simulated vitals for the dashboard
+            vitals_data = {
+                "heart_rate": random.randint(65, 82),
+                "sleep_quality": random.randint(85, 98),
+                "stress_level": random.randint(12, 28),
+                "o2_level": round(random.uniform(20.9, 21.1), 1),
+                "co2_level": round(random.uniform(0.03, 0.04), 2),
+                "temperature": round(random.uniform(22.0, 23.0), 1),
             }
             
-            # Update random agent status
-            active_agent = random.choice(agents)
-            agent_states[active_agent]["status"] = random.choice(["Active", "Processing"])
-            agent_states[active_agent]["last_action"] = f"Monitoring {active_agent.lower()} parameters..."
+            # Update a random agent's status to simulate activity
+            active_target = random.choice(all_agents)
+            # Randomly change status for variety
+            chance = random.random()
+            if chance > 0.8:
+                active_target.update_status("processing", f"Analyzing data stream for {active_target.name}...")
+            elif chance > 0.98:
+                active_target.update_status("alert", f"Anomaly detected in {active_target.name} parameters!")
+            else:
+                active_target.update_status("idle", f"Monitoring {active_target.name.lower()}...")
+
+            # Collect states of all 10 agents
+            agent_states = {}
+            for agent in all_agents:
+                # Use display name that matches frontend AGENTS array
+                display_name = AGENT_DISPLAY_NAMES.get(agent.name, agent.name)
+                agent_states[display_name] = {
+                    "status": agent.state.value.capitalize(),
+                    "last_action": agent.status_message
+                }
             
-            data = {
-                "vitals": vitals,
+            payload = {
+                "vitals": vitals_data,
                 "agent_states": agent_states,
                 "timestamp": asyncio.get_event_loop().time()
             }
             
-            await websocket.send_text(json.dumps(data))
-            await asyncio.sleep(1) # Send update every second
+            await ws_manager.send_personal_message(payload, client_id)
+            await asyncio.sleep(1)
             
     except WebSocketDisconnect:
-        print("Client disconnected")
+        ws_manager.disconnect(client_id)
+    except Exception as e:
+        print(f"WS Error: {e}")
+        ws_manager.disconnect(client_id)
 
 if __name__ == "__main__":
     import uvicorn
