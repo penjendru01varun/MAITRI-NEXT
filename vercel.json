@@ -1,5 +1,0 @@
-{
-    "buildCommand": "cd frontend && npm install --legacy-peer-deps && npm run build",
-    "outputDirectory": "frontend/.next",
-    "ignoreCommand": "git log -1 --format=%B | grep -i \"skip ci\""
-}
