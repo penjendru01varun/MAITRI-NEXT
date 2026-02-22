@@ -1,7 +1,4 @@
-declare module 'jotai';
-declare module 'lucide-react';
-declare module 'framer-motion';
-declare module 'three';
-declare module '@react-three/fiber';
-declare module '@react-three/drei';
+// Only declare modules that are genuinely missing types.
+// jotai, framer-motion, three, lucide-react, @react-three/* all ship their own types
+// — do NOT redeclare them here or it erases their real typings.
 declare module 'canvas-confetti';

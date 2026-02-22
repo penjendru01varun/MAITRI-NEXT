@@ -1,14 +1,28 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useAtom } from 'jotai';
 import { vitalsAtom, agentStatesAtom, messagesAtom } from '@/lib/store';
 import { Activity, Heart, Moon, Zap, AlertTriangle, MessageSquare, Shield, Settings, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import MindMap3D from './MindMap3D';
 import ChatPanel from './ChatPanel';
 import AgentActivity from './AgentActivity';
 import { AnimatedPage, MagneticButton, OrbitalDashboard } from './AdvancedEffects';
+
+// Dynamically import MindMap3D with SSR disabled (required for Three.js / WebGL)
+const MindMap3D = dynamic(() => import('./MindMap3D'), {
+    ssr: false,
+    loading: () => (
+        <div className="w-full h-full flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-16 h-16 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
+                <p className="text-primary/60 font-orbitron text-xs tracking-widest uppercase">Initializing Mesh...</p>
+            </div>
+        </div>
+    )
+});
+
 
 export default function Dashboard() {
     const [vitals, setVitals] = useAtom(vitalsAtom);
